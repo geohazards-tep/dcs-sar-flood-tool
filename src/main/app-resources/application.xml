@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="application">
+  <jobTemplates>
+    <jobTemplate id="download">
+      <streamingExecutable>/application/node_download/run.py</streamingExecutable>
+	 <defaultParameters>
+      </defaultParameters>
+	<defaultJobconf>
+	<property id="ciop.job.max.tasks">5</property>
+        <property id="mapred.task.timeout">9900000000</property>
+	</defaultJobconf>	
+    </jobTemplate>
+    <jobTemplate id="pairs_definition">
+      <streamingExecutable>/application/node_pairs_definition/run.py</streamingExecutable>
+        <defaultParameters><parameter id="long coherence interval">90</parameter>
+        </defaultParameters>
+        <defaultJobconf>
+        <property id="ciop.job.max.tasks">1</property>
+        <property id="mapred.task.timeout">9900000000</property>
+        </defaultJobconf>
+    </jobTemplate>
+  </jobTemplates>
+    <workflow id="sar-flood-extraction" title="sar flood extraction" abstract="this workflow will download the selected data from the interface, coregister the images, estimate the coherence and then perform the flood extraction from SAR data">
+    <workflowVersion>1.0</workflowVersion>
+    <node id="node_download">       
+      <job id="download"></job>
+      <sources>
+        <source refid="string:list" id="input" title="sar images" abstract="sar images to be downloaded" scope="test">'https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1A_IW_SLC__1SDV_20170514T045543_20170514T045610_016573_01B7C1_E56B','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1A_IW_SLC__1SDV_20170514T045607_20170514T045635_016573_01B7C1_2C69','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1B_IW_SLC__1SDV_20170508T045445_20170508T045513_005502_009A41_EF89','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1B_IW_SLC__1SDV_20170508T045510_20170508T045537_005502_009A41_4B03','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1B_IW_SLC__1SDV_20170508T045535_20170508T045602_005502_009A41_C53A'</source>
+      </sources>
+    </node>
+  </workflow>
+</application>
