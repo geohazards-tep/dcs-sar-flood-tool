@@ -4,7 +4,7 @@
   <groupId>e-geos</groupId>
   <artifactId>sar-flood-tool</artifactId>
   <packaging>pom</packaging>
-  <name>sar-flood-tool</name>
+  <name>dcs-sar-flood-tool</name>
   <parent>
     <groupId>com.terradue</groupId>
     <artifactId>dcs-python-parent</artifactId>

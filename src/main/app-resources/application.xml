@@ -12,21 +12,45 @@
     </jobTemplate>
     <jobTemplate id="pairs_definition">
       <streamingExecutable>/application/node_pairs_definition/run.py</streamingExecutable>
-        <defaultParameters><parameter id="long coherence interval">90</parameter>
+        <defaultParameters><parameter id="long_coherence_interval">90</parameter>
         </defaultParameters>
         <defaultJobconf>
         <property id="ciop.job.max.tasks">1</property>
         <property id="mapred.task.timeout">9900000000</property>
         </defaultJobconf>
     </jobTemplate>
+<jobTemplate id="sar_preprocessing">
+      <streamingExecutable>/application/node_sar_preprocessing/run.py</streamingExecutable>
+        <defaultParameters>
+        <parameter id="swath" title="Sub-swath" abstract="Sub-swath of the S-1 frame to be analyzed (three values possible: IW1, IW2, IW3)" scope="runtime" type="LiteralData">
+        <options>
+           <option>IW1</option>
+           <option>IW2</option>
+           <option>IW3</option>
+           <default>IW1</default>
+        </options>
+        </parameter>
+        </defaultParameters>
+        <defaultJobconf>
+          <property id="ciop.job.max.tasks">5</property>
+          <property id="mapred.task.timeout">9900000000</property>
+          </defaultJobconf>
+    </jobTemplate>
   </jobTemplates>
     <workflow id="sar-flood-extraction" title="sar flood extraction" abstract="this workflow will download the selected data from the interface, coregister the images, estimate the coherence and then perform the flood extraction from SAR data">
     <workflowVersion>1.0</workflowVersion>
-    <node id="node_download">       
-      <job id="download"></job>
+    <node id="node_pairs_definition">
+      <job id="pairs_definition"></job>
       <sources>
-        <source refid="string:list" id="input" title="sar images" abstract="sar images to be downloaded" scope="test">'https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1A_IW_SLC__1SDV_20170514T045543_20170514T045610_016573_01B7C1_E56B','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1A_IW_SLC__1SDV_20170514T045607_20170514T045635_016573_01B7C1_2C69','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1B_IW_SLC__1SDV_20170508T045445_20170508T045513_005502_009A41_EF89','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1B_IW_SLC__1SDV_20170508T045510_20170508T045537_005502_009A41_4B03','https://catalog.terradue.com//sentinel1/search?format=json&amp;uid=S1B_IW_SLC__1SDV_20170508T045535_20170508T045602_005502_009A41_C53A'</source>
+        <source refid="string:list" id="input" title="sar images" abstract="sar images to be coregistered" scope="test">'/dir/esempio/S1A_IW_SLC__1SDV_20170514T045543_20170514T045610_016573_01B7C1_E56B.zip','/dir/esempio/S1A_IW_SLC__1SDV_20170112T045607_20170112T045635_016573_01B7C1_2C69.zip','/dir/esempio/S1B_IW_SLC__1SDV_20170508T045445_20170806T045513_005502_009A41_EF89.zip','/dir/esempio/S1B_IW_SLC__1SDV_20170508T045510_20170508T045537_005502_009A41_4B03.zip','/dir/esempio/S1B_IW_SLC__1SDV_20170508T045535_20170208T045602_005502_009A41_C53A.zip'</source>
+      </sources>
+    </node>
+    <node id="node_sar_preprocessing">
+      <job id="sar_preprocessing"></job>
+      <sources>
+        <source refid="wf:node" id="preprocessing" title="sar image pairs" abstract="sar images to preprocess" scope="test">node_pairs_definition</source>
       </sources>
     </node>
   </workflow>
 </application>
+

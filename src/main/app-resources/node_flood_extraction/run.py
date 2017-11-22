@@ -44,12 +44,16 @@ def main():
     #print "sys.stdin ", input
 	
 
-    date_list = []
+    cohe_list = []
 
-    image_list = {}
+    image_list = []
+
     for input in sys.stdin:
     #print "sys.stdin ", input
+	#creo una lista di immagini e una di coerenze, dopodichè estraggo un'area (corner) comune di sovrapposizione, e i file risultato vanno ad alimentare il processore di flood extraction
        	print "input: ", input
+	sys.exit(0)
+	
 	input_file = input[string.find(input, "'")+1:string.rfind(input,"'")].strip()
 	print "input_file: ", input_file
 	#image_list.append(input_file)
@@ -93,8 +97,8 @@ def main():
     print "master_coreg: ", image_list[master_coreg_date]
     #adesso devo creare le coppie su cui coregistrare
     for i in date_list:
-	#image_pairs.append(str((image_list[master_coreg_date],image_list[i], 'coregistration')))
-        image_pairs.append(str((image_list[i], image_list[i], 'coregistration')))	
+	image_pairs.append(str((image_list[master_coreg_date],image_list[i], 'coregistration')))
+	
 
     print image_pairs
     res = ciop.publish(image_pairs, mode='silent', metalink=True)

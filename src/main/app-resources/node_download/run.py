@@ -45,7 +45,7 @@ def main():
     out, err=process.communicate()
     res=ciop.copy(out,outdir, extract=False)
     print res
-    output_file = ciop.publish(res, mode='silent', metalink=True)
+    output_file = ciop.publish(res, mode='', metalink=False)
     print "output: ", output_file
 
 
