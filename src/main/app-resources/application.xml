@@ -36,7 +36,26 @@
           <property id="mapred.task.timeout">9900000000</property>
           </defaultJobconf>
     </jobTemplate>
+<jobTemplate id="sar_common_area_extraction">
+     <streamingExecutable>/application/node_sar_common_area_extraction/run.py</streamingExecutable>
+        <defaultParameters>
+        </defaultParameters>
+        <defaultJobconf>
+          <property id="ciop.job.max.tasks">1</property>
+          <property id="mapred.task.timeout">9900000000</property>
+          </defaultJobconf>
+    </jobTemplate>
   </jobTemplates>
+<jobTemplate id="sar_data_crop">
+     <streamingExecutable>/application/node_sar_data_crop/run.py</streamingExecutable>
+        <defaultParameters>
+        </defaultParameters>
+        <defaultJobconf>
+          <property id="ciop.job.max.tasks">5</property>
+          <property id="mapred.task.timeout">9900000000</property>
+          </defaultJobconf>
+</jobTemplate>
+</jobTemplates>
     <workflow id="sar-flood-extraction" title="sar flood extraction" abstract="this workflow will download the selected data from the interface, coregister the images, estimate the coherence and then perform the flood extraction from SAR data">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_pairs_definition">
@@ -51,6 +70,18 @@
         <source refid="wf:node" id="preprocessing" title="sar image pairs" abstract="sar images to preprocess" scope="test">node_pairs_definition</source>
       </sources>
     </node>
+   <node id="node_sar_common_area_extraction">
+      <job id="sar_common_area_extraction"></job>
+      <sources>
+        <source refid="wf:node" id="area_extraction" title="common area extraction" abstract="common area definition for cropping SAR preprocessed data" scope="test">node_sar_preprocessing</source>
+      </sources>
+   </node>
+   <node id="node_sar_data_crop">
+      <job id="sar_data_crop"></job>
+      <sources>
+        <source refid="wf:node" id="data_crop" title="SAR data crop" abstract="SAR preprocessed data crop and resampling" scope="test">node_area_extraction</source>
+      </sources>
+   </node>
   </workflow>
 </application>
 
