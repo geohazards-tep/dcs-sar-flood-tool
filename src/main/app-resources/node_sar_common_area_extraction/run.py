@@ -59,8 +59,9 @@ def main():
     #print "sys.stdin ", input
     #for input in sys.stdin:
     #print "sys.stdin ", input
-    res = reduce(lambda x,y: x.Intersection(y) if x else y,
-                 [get_envelope(f) for f in input_file)
+    intersection = reduce(lambda x,y: x.Intersection(y) if x else y,
+                          [get_envelope(f) for f in input_file)
+    res = intersection.ExportToGML()
     print res
     output_file = ciop.publish(res, mode='', metalink=False)
     print "output: ", output_file
