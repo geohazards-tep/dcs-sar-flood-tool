@@ -61,6 +61,8 @@ def main():
     #print "sys.stdin ", input
     intersection = reduce(lambda x,y: x.Intersection(y) if x else y,
                           [get_envelope(f) for f in input_file)
+    #prefer GML because it looks like it is the only textual format exporting
+    #the spatial reference system
     res = intersection.ExportToGML()
     print res
     output_file = ciop.publish(res, mode='', metalink=False)
