@@ -11,6 +11,7 @@ import subprocess
 import os,sys
 import cioppy
 import string
+import json
 import gdal
 import ogr
 import osr
@@ -63,7 +64,10 @@ def main():
                           [get_envelope(f) for f in input_file)
     #prefer GML because it looks like it is the only textual format exporting
     #the spatial reference system
-    res = intersection.ExportToGML()
+    res = json.dumps(dict(file=files[0], 
+                          srs=intersection.GetSpatialReference()
+                                          .ExportToProj4(),
+                          envelope=intersection.GetEnvelope()))
     print res
     output_file = ciop.publish(res, mode='', metalink=False)
     print "output: ", output_file
