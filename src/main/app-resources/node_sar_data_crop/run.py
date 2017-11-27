@@ -47,7 +47,7 @@ def main():
     srs = data['srs']
     envelope = data['envelope']
     bounds = [envelope[i] for i in (0,2,1,3)]
-    out = os.path.join(outdir, os.path.basename(filepath)[::-1].replace('.', '-crop.'[::-1])[::-1])
+    out = os.path.join(outdir, os.path.basename(filepath)[::-1].replace('.', '-crop.'[::-1], 1)[::-1])
     ds = gdal.Warp(outfile, filepath,
                    outputBounds=bounds, outputBoundsSRS=srs,
                    resampleAlg='bilinear', multithread=False)
