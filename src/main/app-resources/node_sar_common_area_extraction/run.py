@@ -55,13 +55,14 @@ def get_envelope(filepath):
 def main():
     outdir=ciop.tmp_dir
     input = sys.stdin.readlines()
-    input_file = input[0][string.find(input[0], "'")+1:string.rfind(input[0],"'")]    
-    print input_file
+    input_files = [ciop.copy(x.strip("'"), outdir, extract=False)
+                   for x in input]
+    print input_files
     #print "sys.stdin ", input
     #for input in sys.stdin:
     #print "sys.stdin ", input
     intersection = reduce(lambda x,y: x.Intersection(y) if x else y,
-                          [get_envelope(f) for f in input_file)
+                          [get_envelope(f) for f in input_files)
     #prefer GML because it looks like it is the only textual format exporting
     #the spatial reference system
     res = json.dumps(dict(file=files[0], 
