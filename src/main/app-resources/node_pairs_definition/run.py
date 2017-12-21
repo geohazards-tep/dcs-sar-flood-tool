@@ -76,7 +76,7 @@ def main():
     for date1 in date_list:
 	for date2 in date_list:
 	    print date2 - date1
-	    if (date2 - date1)== gap:
+	    if (date2 - date1) > gap:
 			cohe_list.append((date1,date2))
 		
     print cohe_list

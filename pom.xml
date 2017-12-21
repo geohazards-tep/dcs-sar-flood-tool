@@ -19,9 +19,9 @@
     <yumRepo>geohazards-tep</yumRepo>
   </properties>
   <scm>
-    <connection>scm:git:ssh://git@github.com/geohazards-tep/sar-flood-tool</connection>
-    <developerConnection>scm:git:ssh://git@github.com/geohazards-tep/sar-flood-tool</developerConnection>
-    <url>https://github.com/geohazards-tep/sar-flood-tool</url>
+    <connection>scm:git:ssh://git@github.com/geohazards-tep/dcs-sar-flood-tool</connection>
+    <developerConnection>scm:git:ssh://git@github.com/geohazards-tep/dcs-sar-flood-tool</developerConnection>
+    <url>https://github.com/geohazards-tep/dcs-sar-flood-tool</url>
     <tag>HEAD</tag>
   </scm>
   <profiles>
@@ -48,6 +48,7 @@
                   <!-- Set here the dependencies installed with 'sudo yum install'-->
                   <requires>
                     <require>miniconda</require>
+		    <require>openjpeg2</require>
                   </requires>
                 </configuration>
               </execution>

@@ -55,22 +55,40 @@ def get_envelope(filepath):
 def main():
     outdir=ciop.tmp_dir
     input = sys.stdin.readlines()
-    input_files = [ciop.copy(x.strip("'"), outdir, extract=False)
+    print input
+    #print (x.strip("'") for x in input)
+    input_files_hdfs = [x.strip().strip("'") for x in input]
+
+    input_files = [ciop.copy(x.strip().strip("'"), outdir, extract=False)
                    for x in input]
     print input_files
     #print "sys.stdin ", input
     #for input in sys.stdin:
     #print "sys.stdin ", input
     intersection = reduce(lambda x,y: x.Intersection(y) if x else y,
-                          [get_envelope(f) for f in input_files)
+                          [get_envelope(f) for f in input_files])
     #prefer GML because it looks like it is the only textual format exporting
     #the spatial reference system
-    res = json.dumps(dict(file=files[0], 
-                          srs=intersection.GetSpatialReference()
-                                          .ExportToProj4(),
-                          envelope=intersection.GetEnvelope()))
-    print res
-    output_file = ciop.publish(res, mode='', metalink=False)
+    #for input_file in input_files:
+    #    output_file = ciop.publish(os.path.basename(input_file).rsplit('.',1)[0] + '.json',
+    #                               metalink=False)
+    #    with open(output_file, 'w') as f:
+    #        json.dump(dict(file=input_file,
+    #                       srs=intersection.GetSpatialReference()
+    #                                       .ExportToProj4(),
+    #                       envelope=intersection.GetEnvelope()),
+    #                  f)
+    #    with open(output_file, 'r') as f:
+    #        print "output: ", output_file, f.readlines()
+    json_list=[]
+    for input_file_hdfs in input_files_hdfs:
+        res = json.dumps(dict(file=input_file_hdfs,
+                              srs=intersection.GetSpatialReference()
+                                              .ExportToProj4(),
+                              envelope=intersection.GetEnvelope()))
+	print "result to publish: %s" % res
+	json_list.append(res)
+    output_file = ciop.publish(json_list, metalink=True, mode='silent')
     print "output: ", output_file
 
 

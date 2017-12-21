@@ -37,15 +37,16 @@ def clean_exit(exit_code):
 
 def main():
     print "cominciamo!!"
-    outdir=ciop.tmp_dir
-	
+    extract_dir=ciop.tmp_dir
+    outdir = extract_dir	
     swath = ciop.getparam('swath')
     print 'swath: ', swath
     #input = sys.stdin.readlines()
     #input_file = input[0][string.find(input[0], "'")+1:string.rfind(input[0],"'")]    
     #print input_file
     #print "sys.stdin ", input
-	
+    xml_path = os.path.dirname(__file__)
+    print 'xml_path: %s' % xml_path
 
     for input in sys.stdin:
     	print "input to the specific node: ",input
@@ -58,20 +59,76 @@ def main():
 	print "mode:  ", mode
         if ( mode == "coregistration" ):
             print "mode:  ", mode
+	    #res=subprocess.call("ls -l "+master)
 	    #subprocess.call(["unzip",local_file,"-d",extract_dir])
 	    #faccio l'estrazione in dirtemp
-	    cmd_unzip='unzip '+master+' -d '+extract_dir
-	    #mi trovo la directory che è stata estaratta (naming convention basata su S-1)
-	    extract_dir=extract_dir+os.sep+os.path.basename(filename)[0:67]+'.SAFE' #da sistemare
-	    #creo la variabile con il file manifest.safe
+	    master_local = ciop.copy(master, outdir, extract=False)
+	    cmd_test='ls -l %s' % outdir
+	    print "ls command test : %s" % cmd_test
+	    res=subprocess.call(cmd_test, shell=True)
+
+            cmd_unzip='unzip '+master_local+' -d '+extract_dir
+	    print "cmd_unzip : %s" % cmd_unzip
+       	    res=subprocess.call(cmd_unzip, shell=True)
 	    
-		#lancia la coregistrazione
-	    cmd='/opt/snap-5.0/bin/gpt ampl_geo_cal_single_cl.xml -Psub='+swath+' -DAuxDataPath='+outdir+' -Pmaster='+master+os.path.sep+'manifest.safe'+' -Pampl_geo='+master+os.path.sep+os.path.basename(master)[0:-5]+'_ampl'
-	    print cmd
-	   #subprocess.call('/opt/snap-5.0/bin/gpt ampl_geo_cal_single_cl.xml -Psub='+swath+' -DAuxDataPath='+outdir+' -Pmaster='+master+os.path.sep+'manifest.safe'+' -Pampl_geo='+master+os.path.sep+os.path.basename(master)[0:-5]+'_ampl')
+	    #mi trovo la directory che è stata estaratta (naming convention basata su S-1)
+	    master_unzip=extract_dir+os.sep+os.path.basename(master)[0:67]+'.SAFE' #da sistemar
+	    master_outname=master_unzip+os.path.sep+os.path.basename(master)[0:-4]+'_ampl.tif'
+	    cmd_test='ls -l '+master_unzip
+	    res=subprocess.call(cmd_test, shell=True)
+	    #creo la variabile con il file manifest.safe
+	    #lancia la coregistrazione
+	    cmd_coreg='/opt/snap-5.0/bin/gpt '+xml_path+os.path.sep+'ampl_geo_cal_single_cl_v1.xml -Psub='+swath+' -DAuxDataPath='+outdir+' -Pmaster='+master_unzip+os.path.sep+'manifest.safe'+' -Pampl_geo='+master_outname
+	    print cmd_coreg
+	    try:
+	    	res=subprocess.call(cmd_coreg, shell=True)
+		#outfilename=master_unzip+os.path.sep+os.path.basename(master)[0:-5]+'_ampl'
+		#cmd_test='ls -l '+master_outname
+		#res=subprocess.call(cmd_test, shell=True)
+		print "res: %s" % res
+		print master_outname
+	        #res = ciop.publish(master_outname, metalink=False)
+
+	    except: 
+		print "coregistration of %s failed" % master
+		raise
+   #subprocess.call('/opt/snap-5.0/bin/gpt ampl_geo_cal_single_cl.xml -Psub='+swath+' -DAuxDataPath='+outdir+' -Pmaster='+master+os.path.sep+'manifest.safe'+' -Pampl_geo='+master+os.path.sep+os.path.basename(master)[0:-5]+'_ampl')
+	    #cmd_test='ls -l '+outfilename
+            #res=subprocess.call(cmd_test, shell=True)
+
 	elif (  mode == "coherence" ):
 	    print "mode:  ", mode
 	    #lanciala coerenza
+            master_local = ciop.copy(master, outdir, extract=False)
+            slave_local = ciop.copy(slave, outdir, extract=False)
+            cmd_unzip='unzip '+master_local+' -d '+extract_dir
+	    res=subprocess.call(cmd_unzip, shell=True)
+            cmd_unzip='unzip '+slave_local+' -d '+extract_dir
+            res=subprocess.call(cmd_unzip, shell=True)
+	    master_unzip=extract_dir+os.sep+os.path.basename(master)[0:67]+'.SAFE'
+	    slave_unzip=extract_dir+os.sep+os.path.basename(slave)[0:67]+'.SAFE'
+	
+            cohe_outname = outdir+os.path.sep+os.path.basename(master)[0:-4]+'_'+os.path.basename(slave)[0:-4]+'_cohe.tif'
+	    
+	    cmd_cohe='/opt/snap-5.0/bin/gpt '+xml_path+os.path.sep+'cohe_geo_cl_v3.xml -Psub='+swath+' -DAuxDataPath='+outdir+' -Pmaster='+master_unzip+os.path.sep+'manifest.safe'+' -Pslave='+slave_unzip+os.path.sep+'manifest.safe'+'  -Pcohegeo='+cohe_outname
+            print cmd_cohe
+	    try:
+                res=subprocess.call(cmd_cohe, shell=True)
+                #outfilename=master_unzip+os.path.sep+os.path.basename(master)[0:-5]+'_ampl'
+                #cmd_test='ls -l '+cohe_outname
+                #res=subprocess.call(cmd_test, shell=True)
+		print cohe_outname
+	        res = ciop.publish(cohe_outname, metalink=False)
+
+            except:
+                print "coherence estimation of %s and %s failed" % (master,slave)
+                raise
+# cohe_geo_cl_v3.xml
+#/opt/snap-5.0/bin/gpt cohe_geo_cl_v3.xml  -Psub=IW3 -DAuxDataPath=./ -Pmaster='S1A_IW_SLC__1SDV_20151217T061404_20151217T061434_009078_00D09B_065C.SAFE/manifest.safe' -Pslave='S1A_IW_SLC__1SDV_20151229T061402_20151229T061429_009253_00D59B_32D4.SAFE/manifest.safe'  -Pcohegeo=master_slave_cohe.test
+
+
+
+
 	else:
 	    print "mode not recognized...terminating"
 	    raise ValueError('wrong preprocessing mode, it should be either coregistration or coherence, not '+mode+' mode')

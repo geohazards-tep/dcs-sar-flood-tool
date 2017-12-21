@@ -13,6 +13,7 @@ import os,sys
 import cioppy
 import string
 import datetime
+import flood_cd
 ciop = cioppy.Cioppy()
 
 
@@ -38,70 +39,47 @@ def clean_exit(exit_code):
 def main():
     print "cominciamo!!"
     outdir=ciop.tmp_dir
-    #input = sys.stdin.readlines()
-    #input_file = input[0][string.find(input[0], "'")+1:string.rfind(input[0],"'")]    
-    #print input_file
-    #print "sys.stdin ", input
-	
 
     cohe_list = []
-
     image_list = []
+    input = sys.stdin.readlines()
+    input_files_hdfs = [x.strip().strip("'") for x in input]
+    
+    #print "input file hdfs: ", input_files_hdfs
 
-    for input in sys.stdin:
+    
+    for input_file in input_files_hdfs:
     #print "sys.stdin ", input
-	#creo una lista di immagini e una di coerenze, dopodichè estraggo un'area (corner) comune di sovrapposizione, e i file risultato vanno ad alimentare il processore di flood extraction
-       	print "input: ", input
-	sys.exit(0)
-	
-	input_file = input[string.find(input, "'")+1:string.rfind(input,"'")].strip()
-	print "input_file: ", input_file
-	#image_list.append(input_file)
-	#input_file = input[string.find(input, "'")+1:string.rfind(input,"'")]
-        #print input_file
-	#print 'sto facendo un test'
-	#print input_file[-38:-34], input_file[-34:-32], input_file[-32:-30]
-	#input_file_basename = os.path.basename(input_file)
+	#creo una lista di immagini e una di coerenze e i file vanno ad alimentare il processore di flood extraction
+       	print "input: ", input_file
 	print "vai con la data!"
-	print input_file[-38:-34], input_file[-34:-32], input_file[-32:-30]
-	date_img = datetime.date(int(input_file[-38:-34]), int(input_file[-34:-32]),int(input_file[-32:-30]))
-	print "date_img: ", date_img
-	image_list[date_img] = input_file
-	date_list.append(date_img)
-	print "il file di input e': ",input_file
+        #print input_file[-38:-34], input_file[-34:-32], input_file[-32:-30]
+        date_img = datetime.date(int(input_file[-48:-44]), int(input_file[-44:-42]),int(input_file[-42:-40]))
+	local_infile = ciop.copy(input_file, outdir, extract=False)
+        print "date_img: ", date_img
+	print "local file : %s" % local_infile
+	if (input_file.find('ampl') > -1):
+	    image_list.append((date_img, local_infile))
+	
+	if (input_file.find('cohe') > -1):
+            cohe_list.append((date_img, local_infile))
 
-    date_list.sort()
-    
-    
-    ##Creo le coppie
-    gap=datetime.timedelta(days=int(ciop.getparam('long_coherence_interval')))
-    print "gap: ", gap
-    cohe_list=[]
-    for date1 in date_list:
-	for date2 in date_list:
-	    print date2 - date1
-	    if (date2 - date1)== gap:
-			cohe_list.append((date1,date2))
-		
+    print image_list
+    print cohe_list
+
+
+    image_list.sort()
+    cohe_list.sort()
+
+    print image_list
     print cohe_list
     
-    master_coreg_date =  date_list[len(date_list)/2]
-    # ADESSO DEVO PUBBLICARE IL RISULTATO 
-    # RICOSTRUIRE LA COPPIA DELLE IMMAGINI
-    image_pairs=[]
-    for i in cohe_list:
-        image_pairs.append(str((image_list[i[0]],image_list[i[1]], 'coherence')))
+    outfile_list=flood_cd.flood_cd_body(amp_list=[x[1] for x in image_list], cohe_long_list=[x[1] for x in cohe_list], window="", minimum_images=1, maximum_images=20, outdir=outdir, smallest_flood_pixels=9)
+    print os.path.isfile(outfile_list[0])
 
-    print "image_pairs: ", image_pairs    
-    print "master_coreg_date: ", master_coreg_date
-    print "master_coreg: ", image_list[master_coreg_date]
-    #adesso devo creare le coppie su cui coregistrare
-    for i in date_list:
-	image_pairs.append(str((image_list[master_coreg_date],image_list[i], 'coregistration')))
-	
-
-    print image_pairs
-    res = ciop.publish(image_pairs, mode='silent', metalink=True)
+    print outfile_list
+    
+    res = ciop.publish(outfile_list, metalink=True)
     print 'result from publish string: ', res
 
     #output_file = ciop.publish(res, mode='silent', metalink=True)

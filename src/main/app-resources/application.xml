@@ -28,7 +28,7 @@
             <option>IW1</option>
             <option>IW2</option>
             <option>IW3</option>
-            <default>IW1</default>
+            <default>IW3</default>
           </options>
         </parameter>
       </defaultParameters>
@@ -55,32 +55,55 @@
         <property id="mapred.task.timeout">9900000000</property>
       </defaultJobconf>
     </jobTemplate>
+    <jobTemplate id="flood_extraction">
+      <streamingExecutable>/application/node_flood_extraction/run.py</streamingExecutable>
+      <defaultParameters>
+        </defaultParameters>
+      <defaultJobconf>
+        <property id="ciop.job.max.tasks">1</property>
+        <property id="mapred.task.timeout">9900000000</property>
+      </defaultJobconf>
+    </jobTemplate>
   </jobTemplates>
-  <workflow id="sar-flood-extraction" title="sar flood extraction" abstract="this workflow will download the selected data from the interface, coregister the images, estimate the coherence and then perform the flood extraction from SAR data">
+  <workflow id="sar-flood-extraction" title="sar flood extraction" abstract="Service using the SNAP Sentinel-1 IW SLC Amplitude Coherence Composites and a Flood Classifier developed and integrated in GEP by eGEOS to extract flooded areas from Sentinel-1 interferometric multi-temporal stack to support flood mapping.">
     <workflowVersion>1.0</workflowVersion>
+    <node id="node_download">
+      <job id="download"/>
+      <sources>
+	<source refid="string:list" id="input" title="sar images" abstract="sar images to be downloaded" scope="runtime"></source>        
+      </sources>
+    </node>
     <node id="node_pairs_definition">
       <job id="pairs_definition"/>
       <sources>
-        <source refid="string:list" id="input" title="sar images" abstract="sar images to be coregistered" scope="test">'/dir/esempio/S1A_IW_SLC__1SDV_20170514T045543_20170514T045610_016573_01B7C1_E56B.zip','/dir/esempio/S1A_IW_SLC__1SDV_20170112T045607_20170112T045635_016573_01B7C1_2C69.zip','/dir/esempio/S1B_IW_SLC__1SDV_20170508T045445_20170806T045513_005502_009A41_EF89.zip','/dir/esempio/S1B_IW_SLC__1SDV_20170508T045510_20170508T045537_005502_009A41_4B03.zip','/dir/esempio/S1B_IW_SLC__1SDV_20170508T045535_20170208T045602_005502_009A41_C53A.zip'</source>
+        <source refid="wf:node" id="input" title="sar images" abstract="sar images to be coregistered" scope="test">node_download</source>
       </sources>
     </node>
     <node id="node_sar_preprocessing">
       <job id="sar_preprocessing"/>
       <sources>
-        <source refid="wf:node" id="preprocessing" title="sar image pairs" abstract="sar images to preprocess" scope="test">node_pairs_definition</source>
+        <source refid="wf:node" id="preprocessing" title="sar image preprocessing" abstract="sar images to preprocess" scope="test">node_pairs_definition</source>
       </sources>
     </node>
     <node id="node_sar_common_area_extraction">
       <job id="sar_common_area_extraction"/>
       <sources>
         <source refid="wf:node" id="area_extraction" title="common area extraction" abstract="common area definition for cropping SAR preprocessed data" scope="test">node_sar_preprocessing</source>
+        <!--source refid="string:list" id="area_extraction" title="common area extraction" abstract="common area definition for cropping SAR preprocessed data" scope="test">'/home/corvinog/dati_sar_test/test_dir/S1B_IW_SLC__1SDV_20170709T061318_20170709T061346_006407_00B43B_F369.SAFE/S1B_IW_SLC__1SDV_20170709T061318_20170709T061346_006407_00B43B_F369_ampl.tif','/home/corvinog/dati_sar_test/test_dir/S1B_IW_SLC__1SDV_20171130T061321_20171130T061349_008507_00F168_0271.SAFE/S1B_IW_SLC__1SDV_20171130T061321_20171130T061349_008507_00F168_0271_ampl.tif','/home/corvinog/dati_sar_test/test_dir/S1B_IW_SLC__1SDV_20170709T061318_20170709T061346_006407_00B43B_F369_S1B_IW_SLC__1SDV_20171130T061321_20171130T061349_008507_00F168_0271_cohe.tif'</source-->
       </sources>
     </node>
     <node id="node_sar_data_crop">
       <job id="sar_data_crop"/>
       <sources>
-        <source refid="wf:node" id="data_crop" title="SAR data crop" abstract="SAR preprocessed data crop and resampling" scope="test">node_area_extraction</source>
+        <source refid="wf:node" id="data_crop" title="SAR data crop" abstract="SAR preprocessed data crop and resampling" scope="test">node_sar_common_area_extraction</source>
       </sources>
     </node>
-  </workflow>
+    <node id="node_flood_extraction">
+      <job id="flood_extraction"/>
+      <sources>
+        <source refid="wf:node" id="flood_extraction" title="flood extraction step" abstract="flood extraction from SAR data" scope="test">node_sar_data_crop</source>
+      </sources>
+    </node>
+   </workflow>
 </application>
+

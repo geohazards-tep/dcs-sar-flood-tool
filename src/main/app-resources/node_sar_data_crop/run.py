@@ -12,6 +12,7 @@ import os,sys
 import cioppy
 import string
 import json
+import gdal
 ciop = cioppy.Cioppy()
 
 
@@ -37,25 +38,34 @@ def clean_exit(exit_code):
 def main():
     outdir=ciop.tmp_dir
     input = sys.stdin.readlines()
-    input_line = input[0][string.find(input[0], "'")+1:string.rfind(input[0],"'")]    
-    print input_line
-    #print "sys.stdin ", input
-    #for input in sys.stdin:
-    #print "sys.stdin ", input
+    print "input: %s " % input
+    try:
+    	input_line = input[0][string.find(input[0], "'")+1:string.rfind(input[0],"'")]    
+	print input_line
+    except:
+        print "no input!"
+	sys.exit(0)
+
+    	#print "sys.stdin ", input
+    	#for input in sys.stdin:
+    	#print "sys.stdin ", input
     data = json.loads(input_line)
-    filepath = data['file']
+    filepath_hdfs = data['file']
+    filepath=ciop.copy(filepath_hdfs, outdir, extract=False)
     srs = data['srs']
     envelope = data['envelope']
     bounds = [envelope[i] for i in (0,2,1,3)]
     out = os.path.join(outdir, os.path.basename(filepath)[::-1].replace('.', '-crop.'[::-1], 1)[::-1])
-    ds = gdal.Warp(outfile, filepath,
-                   outputBounds=bounds, outputBoundsSRS=srs,
-                   resampleAlg='bilinear', multithread=False)
-    del ds
-    res = ciop.copy(out, outdir, extract=False)
-    print res
-    output_file = ciop.publish(res, mode='', metalink=False)
+    print "out: %s, filepath: %s" % (out, filepath)
+    ds = gdal.Warp(out, filepath,
+               	outputBounds=bounds, outputBoundsSRS=srs,
+               	resampleAlg='bilinear', multithread=False)
+    #del ds
+    #res = ciop.copy(out, outdir, extract=False)
+    #print res
+    output_file = ciop.publish(out, mode='', metalink=False)
     print "output: ", output_file
+   
 
 
 
