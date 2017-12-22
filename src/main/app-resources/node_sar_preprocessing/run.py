@@ -87,7 +87,7 @@ def main():
 		#res=subprocess.call(cmd_test, shell=True)
 		print "res: %s" % res
 		print master_outname
-	        #res = ciop.publish(master_outname, metalink=False)
+	        res = ciop.publish(master_outname, metalink=False)
 
 	    except: 
 		print "coregistration of %s failed" % master
@@ -107,7 +107,10 @@ def main():
             res=subprocess.call(cmd_unzip, shell=True)
 	    master_unzip=extract_dir+os.sep+os.path.basename(master)[0:67]+'.SAFE'
 	    slave_unzip=extract_dir+os.sep+os.path.basename(slave)[0:67]+'.SAFE'
-	
+            print "check on cohe struct:  master unzip is %s (%s) and slave unzip is %s (%s)" % (master_unzip, os.path.isdir(master_unzip), slave_unzip, os.path.isdir(slave_unzip))
+
+            print "check on manifest files: master is %s and slave is %s" % (os.path.isfile(master_unzip+os.path.sep+'manifest.safe'),os.path.isfile(slave_unzip+os.path.sep+'manifest.safe'))
+
             cohe_outname = outdir+os.path.sep+os.path.basename(master)[0:-4]+'_'+os.path.basename(slave)[0:-4]+'_cohe.tif'
 	    
 	    cmd_cohe='/opt/snap-5.0/bin/gpt '+xml_path+os.path.sep+'cohe_geo_cl_v3.xml -Psub='+swath+' -DAuxDataPath='+outdir+' -Pmaster='+master_unzip+os.path.sep+'manifest.safe'+' -Pslave='+slave_unzip+os.path.sep+'manifest.safe'+'  -Pcohegeo='+cohe_outname
@@ -117,7 +120,7 @@ def main():
                 #outfilename=master_unzip+os.path.sep+os.path.basename(master)[0:-5]+'_ampl'
                 #cmd_test='ls -l '+cohe_outname
                 #res=subprocess.call(cmd_test, shell=True)
-		print cohe_outname
+		print res, cohe_outname
 	        res = ciop.publish(cohe_outname, metalink=False)
 
             except:

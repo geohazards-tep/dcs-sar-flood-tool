@@ -77,6 +77,7 @@
       <job id="pairs_definition"/>
       <sources>
         <source refid="wf:node" id="input" title="sar images" abstract="sar images to be coregistered" scope="test">node_download</source>
+        <!--source refid="string:list" id="input" title="sar images" abstract="sar images to be coregistered" scope="test">'/home/corvinog/dati_sar_test/test_dir/S1B_IW_SLC__1SDV_20170709T061318_20170709T061346_006407_00B43B_F369.zip','/home/corvinog/dati_sar_test/test_dir/S1B_IW_SLC__1SDV_20171130T061321_20171130T061349_008507_00F168_0271.zip'</source-->
       </sources>
     </node>
     <node id="node_sar_preprocessing">
