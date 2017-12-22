@@ -13,6 +13,7 @@ import os,sys
 import cioppy
 import string
 import datetime
+import shutil
 ciop = cioppy.Cioppy()
 
 
@@ -70,7 +71,10 @@ def main():
             cmd_unzip='unzip '+master_local+' -d '+extract_dir
 	    print "cmd_unzip : %s" % cmd_unzip
        	    res=subprocess.call(cmd_unzip, shell=True)
-	    
+	    if (os.path.isfile(master_local)):
+                print "remove master coreg"
+                os.remove(master_local)
+ 
 	    #mi trovo la directory che è stata estaratta (naming convention basata su S-1)
 	    master_unzip=extract_dir+os.sep+os.path.basename(master)[0:67]+'.SAFE' #da sistemar
 	    master_outname=master_unzip+os.path.sep+os.path.basename(master)[0:-4]+'_ampl.tif'
@@ -88,6 +92,10 @@ def main():
 		print "res: %s" % res
 		print master_outname
 	        res = ciop.publish(master_outname, metalink=False)
+		if (os.path.isdir(master_unzip)):
+		    print "remove image dir for coreg"
+		    shutil.rmtree(master_unzip)
+		
 
 	    except: 
 		print "coregistration of %s failed" % master
@@ -99,7 +107,7 @@ def main():
 	elif (  mode == "coherence" ):
 	    print "mode:  ", mode
 	    #lanciala coerenza
-            master_local = ciop.copy(master, outdir, extract=False)
+	    master_local = ciop.copy(master, outdir, extract=False)
             slave_local = ciop.copy(slave, outdir, extract=False)
             cmd_unzip='unzip '+master_local+' -d '+extract_dir
 	    res=subprocess.call(cmd_unzip, shell=True)
@@ -110,6 +118,14 @@ def main():
             print "check on cohe struct:  master unzip is %s (%s) and slave unzip is %s (%s)" % (master_unzip, os.path.isdir(master_unzip), slave_unzip, os.path.isdir(slave_unzip))
 
             print "check on manifest files: master is %s and slave is %s" % (os.path.isfile(master_unzip+os.path.sep+'manifest.safe'),os.path.isfile(slave_unzip+os.path.sep+'manifest.safe'))
+            if (os.path.isfile(master_local)):
+		print "remove master cohe"
+		os.remove(master_local)
+
+	    if (os.path.isfile(slave_local)):
+                os.remove(slave_local)
+		print "remove slave cohe"
+
 
             cohe_outname = outdir+os.path.sep+os.path.basename(master)[0:-4]+'_'+os.path.basename(slave)[0:-4]+'_cohe.tif'
 	    
@@ -122,6 +138,13 @@ def main():
                 #res=subprocess.call(cmd_test, shell=True)
 		print res, cohe_outname
 	        res = ciop.publish(cohe_outname, metalink=False)
+	        if (os.path.isdir(master_unzip)):
+		    print "remove directory master unzip %s" % master_unzip    
+		    shutil.rmtree(master_unzip)
+		
+		if (os.path.isdir(slave_unzip)):
+		    print "remove directory slave unzip %s" % slave_unzip
+                    shutil.rmtree(slave_unzip)	
 
             except:
                 print "coherence estimation of %s and %s failed" % (master,slave)
@@ -135,7 +158,7 @@ def main():
 	else:
 	    print "mode not recognized...terminating"
 	    raise ValueError('wrong preprocessing mode, it should be either coregistration or coherence, not '+mode+' mode')
-    return 0
+    
 	
 
     #/opt/snap-5.0/bin/gpt ampl_geo_cl_v1.xml  -DAuxDataPath=tmpdir -Pmaster='+input+read1+' \
