@@ -49,6 +49,7 @@
                   <requires>
                     <require>miniconda</require>
 		    <require>openjpeg2</require>
+		    <require>snap</require>	
                   </requires>
                 </configuration>
               </execution>
