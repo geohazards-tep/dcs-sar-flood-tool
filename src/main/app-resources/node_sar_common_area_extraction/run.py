@@ -19,7 +19,9 @@ import numpy as np
 ciop = cioppy.Cioppy()
 
 
-
+gdal.UseExceptions()
+ogr.UseExceptions()
+osr.UseExceptions()
 
 # define the exit codes - need to be better assessed
 SUCCESS = 0
@@ -37,6 +39,8 @@ def clean_exit(exit_code):
     ciop.log(log_level, msg[exit_code])
 
 def get_envelope(filepath):
+    print(os.stat(filepath))
+    print gdal.VersionInfo()
     ds = gdal.Open(filepath, gdal.GA_ReadOnly)
     y,x = np.mgrid[:ds.RasterYSize:2j,:ds.RasterXSize:2j]
     bbox = np.array([gdal.ApplyGeoTransform(ds.GetGeoTransform(), xx, yy)
