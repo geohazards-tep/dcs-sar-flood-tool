@@ -11,7 +11,7 @@
     <version>2.0.0</version>
   </parent>
   <description>This application will extract a series of flood extent maps from a stack of interferometric S-1 data.</description>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <properties>
     <summary>Flood extraction from S-1 data</summary>
     <description>This application will extract a series of flood extent maps from a stack of interferometric S-1 data.</description>
@@ -28,10 +28,10 @@
     <profile>
       <id>package-app</id>
       <activation>
-         <property>
-           <name>env</name>
-           <value>ci</value>
-         </property>
+        <property>
+          <name>env</name>
+          <value>ci</value>
+        </property>
       </activation>
       <build>
         <plugins>
@@ -48,10 +48,10 @@
                   <!-- Set here the dependencies installed with 'sudo yum install'-->
                   <requires>
                     <require>miniconda</require>
-		    <require>openjpeg2</require>
-		    <require>snap</require>	
+                    <require>openjpeg2</require>
+                    <require>snap</require>
                   </requires>
-	          <postinstallScriptlet combine.children="append">
+                  <postinstallScriptlet combine.children="append">
                     <script>conda update conda -y &amp;&amp; conda install -y --file /application/dependencies/python/packages.list</script>
                   </postinstallScriptlet>
                 </configuration>
