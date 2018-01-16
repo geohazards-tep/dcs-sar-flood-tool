@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.terradue</groupId>
     <artifactId>dcs-python-parent</artifactId>
-    <version>3.0.0-docker</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <description>This application will extract a series of flood extent maps from a stack of interferometric S-1 data.</description>
   <version>1.0</version>
