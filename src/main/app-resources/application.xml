@@ -65,12 +65,12 @@
       </defaultJobconf>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="sar-flood-extraction" title="sar flood extraction" abstract="Service using the SNAP Sentinel-1 IW SLC Amplitude Coherence Composites and a Flood Classifier developed and integrated in GEP by eGEOS to extract flooded areas from Sentinel-1 interferometric multi-temporal stack to support flood mapping.">
+  <workflow id="sar-flood-extraction" title="SAR flood extraction" abstract="Service using the SNAP Sentinel-1 IW SLC Amplitude Coherence Composites and a Flood Classifier developed and integrated in GEP by eGEOS to extract flooded areas from Sentinel-1 interferometric multi-temporal stack to support flood mapping.">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_download">
       <job id="download"/>
       <sources>
-	<source refid="string:list" id="input" title="sar images" abstract="sar images to be downloaded" scope="runtime"></source>        
+	<source refid="string:list" id="input" title="SAR images" abstract="SAR images to be downloaded" scope="runtime"></source>        
       </sources>
     </node>
     <node id="node_pairs_definition">
@@ -103,6 +103,7 @@
       <job id="flood_extraction"/>
       <sources>
         <source refid="wf:node" id="flood_extraction" title="flood extraction step" abstract="flood extraction from SAR data" scope="test">node_sar_data_crop</source>
+	<!--source refid="string:list" id="flood_extraction" title="flood extraction step" abstract="flood extraction from SAR data" scope="test">'/home/corvinog/dati_sar_test/test_class/S1A_IW_SLC__1SDV_20150328T061348_20150328T061415_005228_0069A4_2B88_ampl-crop.tif','/home/corvinog/dati_sar_test/test_class/S1A_IW_SLC__1SDV_20151205T061403_20151205T061430_008903_00CBC9_FD2D_ampl-crop.tif','/home/corvinog/dati_sar_test/test_class/S1A_IW_SLC__1SDV_20151217T061404_20151217T061434_009078_00D09B_065C_ampl-crop.tif','/home/corvinog/dati_sar_test/test_class/S1A_IW_SLC__1SDV_20150328T061348_20150328T061415_005228_0069A4_2B88_S1A_IW_SLC__1SDV_20151205T061403_20151205T061430_008903_00CBC9_FD2D_cohe-crop.tif','/home/corvinog/dati_sar_test/test_class/S1A_IW_SLC__1SDV_20150328T061348_20150328T061415_005228_0069A4_2B88_S1A_IW_SLC__1SDV_20151217T061404_20151217T061434_009078_00D09B_065C_cohe-crop.tif'</source-->
       </sources>
     </node>
    </workflow>
