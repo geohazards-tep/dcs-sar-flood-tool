@@ -82,6 +82,32 @@ def main():
     res = ciop.publish(outfile_list, metalink=True)
     print 'result from publish string: ', res
 
+
+    ##preview and metadata file generation
+
+    #PREVIEW
+    for outfile in outfile_list:
+	outfile_png = outfile.replace("tif","png")
+	cmd = 'gdal_translate  -scale 0 1 -of "PNG" -co WORLDFILE=YES '+outfile+' '+outfile_png
+	print cmd
+	res=subprocess.call(cmd, shell=True)
+	worldfile=outfile.replace("tif","wld")
+        outfile_pngw=worldfile.replace("wld","pngw")
+	os.rename(worldfile, outfile_pngw)
+	res = ciop.publish(outfile_png, metalink=True)
+        res = ciop.publish(outfile_pngw, metalink=True)
+        
+	#METADATA FILE
+	outfile_properties=outfile.replace("tif","properties")
+	file_properties=open(outfile_properties, "w")
+	file_properties.write("date="+datetime.datetime.now().isoformat()+'\n')
+	file_properties.write("title=Flood map extent of "+os.path.basename(outfile)[17:25]+' relative to the situation of '+os.path.basename(outfile)[68:76]+'\n')
+	file_properties.write("copyrigth=e-Geos")
+	file_properties.close()
+	res = ciop.publish(outfile_properties, metalink=True)
+	
+    
+
     #output_file = ciop.publish(res, mode='silent', metalink=True)
     #print "output: ", output_file
 
