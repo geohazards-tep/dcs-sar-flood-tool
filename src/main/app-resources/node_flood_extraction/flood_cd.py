@@ -196,7 +196,7 @@ def flood_cd_body(amp_list=None, cohe_long_list=None, window=None, minimum_image
     outname=[]
     for i in range(minimum_images,ntot_images):
         #print outdir+'/'+os.path.basename(lines[i]).rstrip('\n').rstrip('.tif')+'_flood_map.tif'
-        outname.append(outdir+'/'+os.path.basename(lines[i]).rstrip('\n').rstrip('.tif')+'_flood_map.tif')
+        outname.append(outdir+'/'+os.path.basename(lines[i]).rstrip('\n').rstrip('_ampl-crop.tif')+'_'+os.path.basename(lines[i-1])[17:77]+'_flood_map.tif')
         print outname
 
 
