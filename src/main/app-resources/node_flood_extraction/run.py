@@ -101,6 +101,7 @@ def main():
 	outfile_properties=outfile.replace("tif","properties")
 	file_properties=open(outfile_properties, "w")
 	file_properties.write("date="+datetime.datetime.now().isoformat()+'\n')
+	file_properties.write("output="+os.path.basename(outfile))
 	file_properties.write("title=Flood map extent of "+os.path.basename(outfile)[17:25]+' relative to the situation of '+os.path.basename(outfile)[68:76]+'\n')
 	file_properties.write("copyrigth=e-Geos")
 	file_properties.close()
