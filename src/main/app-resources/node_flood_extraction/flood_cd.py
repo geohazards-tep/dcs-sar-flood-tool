@@ -220,6 +220,7 @@ def flood_cd_body(amp_list=None, cohe_long_list=None, window=None, minimum_image
         new_data.SetGeoTransform(geo_transform)
         new_data.SetProjection(projection)
         new_data.GetRasterBand(1).WriteArray(flood_map.astype('uint8'))
+	new_data.GetRasterBand(1).SetNoDataValue(0)
         new_data.FlushCache()
         del new_data
         print "Written file %r (exists: %s, isfile: %s" % (outname[i-1], os.path.exists(outname[i-1]), os.path.isfile(outname[i-1]))
